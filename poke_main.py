@@ -1,4 +1,5 @@
 import pygame
+import load_things
 
 
 WIDTH, HEIGHT = 1280, 720
