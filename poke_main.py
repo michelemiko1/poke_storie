@@ -17,6 +17,9 @@ GRASS = pygame.transform.scale(GRASS, (WIDTH, HEIGHT))
 HOUSE = pygame.image.load('images/arancione.jpg')
 HOUSE = pygame.transform.scale(HOUSE, (HOUSE_W, HOUSE_H))
 
+PORTA = pygame.image.load('images/porta_interna.jpg')
+PORTA = pygame.transform.scale(PORTA, (60, 40))
+
 PROT_L = pygame.transform.scale(pygame.image.load('images/pers_left.PNG'), (PAOLO_WIDTH, PAOLO_HEIGHT))
 PROT_R = pygame.transform.scale(pygame.image.load('images/pers_right.PNG'), (PAOLO_WIDTH, PAOLO_HEIGHT))
 PROT_U = pygame.transform.scale(pygame.image.load('images/pers_back.PNG'), (PAOLO_WIDTH, PAOLO_HEIGHT))
@@ -39,16 +42,17 @@ def draw_window_level_1(paolo, casa_1, casa_3, casa_4, casa_big):
     pygame.display.update()
 
 
-def draw_window_level_3(paolo):
+def draw_window_level_3(paolo, porta):
 
     WIN.fill(BLACK)
     WIN.blit(HOUSE, (560, 0))
+    WIN.blit(PORTA, (porta.x, porta.y))
 
     WIN.blit(current_prot_dir, (paolo.x, paolo.y))
     pygame.display.update()
 
 
-def handle_movement(keys_pressed, paolo, lista_case, ingresso_porta):
+def handle_movement(keys_pressed, paolo, lista_case, ingresso_porta, porta_interna):
 
     input_x, input_y = 0, 0
 
@@ -82,8 +86,16 @@ def handle_movement(keys_pressed, paolo, lista_case, ingresso_porta):
                 paolo.x -= mov_x
                 paolo.y -= mov_y
 
-    if paolo.colliderect(ingresso_porta):
-        globals()['level'] = 3
+        if paolo.colliderect(ingresso_porta):
+            globals()['level'] = 3
+            paolo.x = porta_interna.x + 8
+            paolo.y = porta_interna.y - 90
+
+    if level == 3:
+        if paolo.colliderect(porta_interna):
+            globals()['level'] = 1
+            paolo.x = ingresso_porta.x - 18
+            paolo.y = ingresso_porta.y + 20
 
 
 
@@ -115,6 +127,8 @@ if __name__ == '__main__':
     casa_4 = pygame.Rect(500, 100, 200, 200)
     casa_big = pygame.Rect(900, 100, 250, 250)
 
+
+
     lista_case = []
     lista_case.append(casa_1)
     lista_case.append(casa_3)
@@ -123,12 +137,14 @@ if __name__ == '__main__':
 
     ingresso_porta = pygame.Rect(900 + 135 -10, 350+1, 4, 4)
 
+    porta_interna = pygame.Rect(920 - 8, 690, 60, 40)
+
     while run:
         clock.tick(FPS)
 
 
         if level == 1: draw_window_level_1(paolo, casa_1, casa_3, casa_4, casa_big)
-        if level == 3: draw_window_level_3(paolo)
+        if level == 3: draw_window_level_3(paolo, porta_interna)
 
 
         for event in pygame.event.get():
@@ -136,4 +152,4 @@ if __name__ == '__main__':
                 pygame.quit()
 
         keys_pressed = pygame.key.get_pressed()
-        handle_movement(keys_pressed, paolo, lista_case, ingresso_porta)
+        handle_movement(keys_pressed, paolo, lista_case, ingresso_porta, porta_interna)
